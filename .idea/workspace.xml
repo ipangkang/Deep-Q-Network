@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="4537109d-4099-4b84-b5d1-b87383c05122" name="Default Changelist" comment="" />
+    <list default="true" id="4537109d-4099-4b84-b5d1-b87383c05122" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/nash_qlearning.py" beforeDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -172,6 +174,7 @@
       <workItem from="1571203491251" duration="54650000" />
       <workItem from="1571483679069" duration="17719000" />
       <workItem from="1571631710416" duration="2628000" />
+      <workItem from="1571636586713" duration="36000" />
     </task>
     <servers />
   </component>
@@ -183,7 +186,9 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
