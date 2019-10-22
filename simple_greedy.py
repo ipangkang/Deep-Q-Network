@@ -57,7 +57,7 @@ def cal_state_reward(index, state_index, current_state):
         sum_l = 0
         for i in range(k2):
             sum_l += Gl[index, i]
-            r_2 = Bl * np.log2(1 + Gl[index, state_index - 1 - k1] / (sum_l - Gl[index, state_index - 1 - k1] + sigma))
+        r_3 = Bl * np.log2(1 + Gl[index, state_index - 1 - k1] / (sum_l - Gl[index, state_index - 1 - k1] + sigma))
     # print('奖励为', r_1+r_2+r_3)
     return r_1+r_2+r_3
 
