@@ -8,7 +8,6 @@ import itertools
 
 
 class DeepQNetwork:
-
     user_num = 5
 
     # 执行步数。
@@ -31,9 +30,12 @@ class DeepQNetwork:
     # # small cell 用户的信道增益(假设的是所有用户的small cell 信道增益，
     # # 在其中可能有一些用户并没有选择small cell方式)
     # Gl = np.ones(user_num)
-    Gd = np.random.uniform(0, 2, [user_num, k1])
-    Gm = np.random.uniform(0, 1, user_num)
-    Gl = np.random.uniform(4, 6, [user_num, k2])
+    # Gd = np.random.uniform(0, 2, [user_num, k1])
+    # Gm = np.random.uniform(0, 1, user_num)
+    # Gl = np.random.uniform(4, 6, [user_num, k2])
+    Gd = np.random.triangular(0, 1, 4, [user_num, k1])
+    Gm = np.random.uniform(0, 2, user_num)
+    Gl = np.random.triangular(0, 5, 6, [user_num, k2])
 
     Bm = 1  # macrocell 的 bandwidth
     Bd = 1  # D2D cluster bandwidth
@@ -49,19 +51,19 @@ class DeepQNetwork:
     sigma = 1  # macrowave 的 AWGN Power
     # 状态数
     # state_num = 1 + k1 + k2
-    state_num = pow(1+k1+k2, user_num)
+    state_num = pow(1 + k1 + k2, user_num)
 
     # 动作数。
     # action_num = 1 + k1 + k2
-    action_num = pow(1+k1+k2, user_num)
+    action_num = pow(1 + k1 + k2, user_num)
 
-    r = np.array([[-1, -1, -1, -1, 0, -1],
-                  [-1, -1, -1, 0, -1, 100.0],
-                  [-1, -1, -1, 0, -1, -1],
-                  [-1, 0, 0, -1, 0, -1],
-                  [0, -1, -1, 1, -1, 100],
-                  [-1, 0, -1, -1, 0, 100],
-                  ])
+    # r = np.array([[-1, -1, -1, -1, 0, -1],
+    #               [-1, -1, -1, 0, -1, 100.0],
+    #               [-1, -1, -1, 0, -1, -1],
+    #               [-1, 0, 0, -1, 0, -1],
+    #               [0, -1, -1, 1, -1, 100],
+    #               [-1, 0, -1, -1, 0, 100],
+    #               ])
 
     # r = np.ones([pow(1+k1+k2, user_num), pow(1+k1+k2, user_num)])
 
@@ -128,10 +130,10 @@ class DeepQNetwork:
         # actions = [action]
         actions = []
         # print(action)
-        action = np.long(action)
-        while (action // int(1+self.k1+self.k2)) >= 1:
-            actions.append(action % int(1+self.k1+self.k2))
-            action = action // int(1+self.k1+self.k2)
+        action = np.long(action)                                                                                        # 小问题要改
+        while (action // int(1 + self.k1 + self.k2)) >= 1:                                                              # 要改
+            actions.append(action % int(1 + self.k1 + self.k2))                                                         # 要改
+            action = action // int(1 + self.k1 + self.k2)                                                               # 要改
 
         actions.append(action)
         actions.reverse()
@@ -144,9 +146,9 @@ class DeepQNetwork:
         for i in range(len(actions)):
             if actions[i] == 0:  # index 为0 代表的就是 macrocell
                 M.append(i)
-            elif 1 <= actions[i] <= self.k1:    # index 为 1 to k1 代表的就是 D2D
+            elif 1 <= actions[i] <= self.k1:  # index 为 1 to k1 代表的就是 D2D
                 D.append(i)
-            elif self.k1+1 <= actions[i] <= self.k1 + self.k2:  # index 为 k1+1 to k1+k2 代表的就是 small cell
+            elif self.k1 + 1 <= actions[i] <= self.k1 + self.k2:  # index 为 k1+1 to k1+k2 代表的就是 small cell
                 L.append(i)
 
         if len(M) + len(D) + len(L) != self.user_num:
@@ -162,7 +164,7 @@ class DeepQNetwork:
                 for i in range(self.k1):
                     sum_d += self.Gd[j, i]
                 r_2 += self.Bd * np.log2(1 + self.Gd[j, actions[D[j]] - 1] /
-                                        (sum_d - self.Gd[j, actions[D[j]] - 1] + self.sigma))
+                                         (sum_d - self.Gd[j, actions[D[j]] - 1] + self.sigma))
 
         if len(L) > 0:
             r_3 = 0
@@ -200,8 +202,8 @@ class DeepQNetwork:
         # 记录所有 loss 变化。
         self.cost_his = []
 
-    def set_state_list(self, state_index):
-        state_list = np.zeros(self.state_num)
+    def set_state_list(self, state_index):                                                                              # 为啥要设定成【0，0，0，0，0，0，0，0，0，0，0，1，0，0，0，0，0】？
+        state_list = np.zeros(self.state_num)                                                                           # 大改
         state_list[state_index] = 1
         state_list = np.array(state_list).reshape(1, self.state_num)
         return state_list
@@ -217,8 +219,8 @@ class DeepQNetwork:
         创建神经网络。
         :return:
         """
-        self.q_eval_input = tf.placeholder(shape=[None, self.state_num], dtype=tf.float32)
-        self.action_input = tf.placeholder(shape=[None, self.action_num], dtype=tf.float32)
+        self.q_eval_input = tf.placeholder(shape=[None, self.state_num], dtype=tf.float32)                              # 咋改
+        self.action_input = tf.placeholder(shape=[None, self.action_num], dtype=tf.float32)                             # 咋改
         self.q_target = tf.placeholder(shape=[None], dtype=tf.float32)
 
         neuro_layer_1 = 3
@@ -244,9 +246,9 @@ class DeepQNetwork:
         :return:
         """
         # current_state = self.state_list[state_index:state_index + 1]
-        current_state = self.set_state_list(state_index)
+        current_state = self.set_state_list(state_index)                                                                # 改！
         if np.random.uniform() < self.epsilon:
-            current_action_index = np.random.randint(0, self.action_num)
+            current_action_index = np.random.randint(0, self.action_num)                                                #可改
         else:
             actions_value = self.session.run(self.q_eval, feed_dict={self.q_eval_input: current_state})
             action = np.argmax(actions_value)
@@ -269,7 +271,7 @@ class DeepQNetwork:
         :return:
         """
         # current_state = self.state_list[current_state_index:current_state_index + 1]
-        current_state = self.set_state_list(current_state_index)
+        current_state = self.set_state_list(current_state_index)                                                        # 改！
         # current_action = self.action_list[current_action_index:current_action_index + 1]
         current_action = self.set_action_list(current_action_index)
         # next_state = self.state_list[next_state_index:next_state_index + 1]\
@@ -301,8 +303,8 @@ class DeepQNetwork:
 
         done = False
 
-        if action == 5:
-            done = True
+        # if action == 5:
+        #     done = True
 
         return next_state, reward, done
 
@@ -372,8 +374,6 @@ class DeepQNetwork:
                                                       self.action_input: batch_action,
                                                       self.q_target: q_target})
 
-        self.cost_his.append(cost)
-
         # if self.step_index % 100 == 0:
         #      print("loss:", cost)
 
@@ -385,7 +385,7 @@ class DeepQNetwork:
         :return:
         """
         # 初始化当前状态。
-        current_state = np.random.randint(0, self.action_num - 1)
+        current_state = np.random.randint(0, self.action_num - 1)                                                       # 改
         self.epsilon = self.INITIAL_EPSILON
 
         while True:
@@ -420,9 +420,29 @@ class DeepQNetwork:
         # test_state = np.zeros(self.state_num)
         # actions_value = self.session.run(self.q_eval, feed_dict={self.q_eval_input: current_state})
         self.train()
-        actions_value = self.session.run(self.q_eval, feed_dict={self.q_eval_input: [np.zeros(self.state_num)]})
+        # action_list = []
+        # rewards = []
+        # reward_sum = 0
+        # for i in range(self.state_num):
+        #     action_list.append(self.select_action(i))
+        # # print(action_list)
+        # for i in range(len(action_list)):
+        #     r = self.update_reward(action_list[i])
+        #     rewards.append(r)
+        # reward_index = np.argmax(rewards)
+        # max_reward = np.max(rewards)
+        # print("index", reward_index)
+        # print("max", max_reward)
+        # np.save("DQN_MAX", max_reward)
+        #
+        # for i in range(self.user_num):
 
-        print(actions_value)
+        # print(reward_sum)
+
+        # actions_value = self.session.run(self.q_eval, feed_dict={self.q_eval_input: [np.zeros(self.state_num)]})
+        #
+        # print(actions_value)
+
         # print(self.update_reward(1111))
         # print(self.update_reward(2222))
 
